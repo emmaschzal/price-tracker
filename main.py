@@ -1,7 +1,5 @@
 import pandas as pd
-import smtplib, os
 import requests
-import cloudscraper as cs
 from price_parser import Price
 from selenium import webdriver
 from selenium.webdriver.common.by import By
