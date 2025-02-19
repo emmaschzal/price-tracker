@@ -1,7 +1,7 @@
 import pandas as pd
 import smtplib, os
+import requests
 import cloudscraper as cs
-from bs4 import BeautifulSoup
 from price_parser import Price
 from selenium import webdriver
 from selenium.webdriver.common.by import By
@@ -12,6 +12,12 @@ SAVE_TO_CSV= True
 PRICES_CSV = "prices.csv"
 SEND_MAIL = True
 
+def bot_send_text(df):
+    for _, product in df.iterrows():  # Iterate over rows properly
+        message = f"{product['product']} ha bajado a {product['price']} €"
+        send_text = f"https://api.telegram.org/bot{bot_token}/sendMessage?chat_id={bot_chat_id}&text={message}"    
+        requests.get(send_text)
+    return True
 
 def get_urls(csv_file):
     df= pd.read_csv(csv_file)
@@ -61,7 +67,7 @@ def main():
         df_updated.to_csv(PRICES_CSV, index=False, mode="a")
         print("saved")
     if SEND_MAIL:
-        send_mail(df_updated)
+        bot_send_text(df_updated)
         print("sended")
 
 main()
