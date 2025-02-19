@@ -11,26 +11,31 @@ PRICES_CSV = "prices.csv"
 SEND_MAIL = True
 
 def bot_send_text(df):
-    for _, product in df.iterrows():  # Iterate over rows properly
+    # Iterate over rows
+    for _, product in df.iterrows(): 
         message = f"{product['product']} ha bajado a {product['price']} €"
         send_text = f"https://api.telegram.org/bot{bot_token}/sendMessage?chat_id={bot_chat_id}&text={message}"    
         requests.get(send_text)
     return True
 
+# Get products to alert
 def get_urls(csv_file):
     df= pd.read_csv(csv_file)
     return df
 
+# Get HTML from site
 def get_response(url):
     driver.get(url)
     driver.implicitly_wait(10)
     return driver.page_source
 
+# Get price from product
 def get_price(html):
     el = driver.find_element(By.CLASS_NAME, "product-info__price-major")
     price = Price.fromstring(el.text.strip())
     return price.amount_float
 
+# Process alerts and lowered prices
 def process_products(df):
     updated_products= []
     for product in df.to_dict("records"):
@@ -39,23 +44,6 @@ def process_products(df):
         product["alert"] = product["price"] < product["alert_price"]
         updated_products.append(product)
     return pd.DataFrame(updated_products)
-    
-def get_mail(df):
-    subject = "Atenció potxola el preu ha baixat"
-    body = df[df["alert"]].to_string()
-    subject_and_message= f"Subject:{subject}\n\n{body}"
-    return subject_and_message
-
-def send_mail(df):
-    message_text = get_mail(df)
-    if not message_text:
-        print("No price drops, skipping email.")
-        return
-
-    with smtplib.SMTP("smtp.gmail.com", 587) as smtp:
-        smtp.starttls()
-        smtp.login(mail_user, mail_pass)
-        smtp.sendmail(mail_user, mail_to, message_text)
 
 def main():
     df = get_urls(PRODUCT_URL_CSV)
