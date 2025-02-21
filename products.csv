@@ -1,2 +1,2 @@
-product,url,alert_price
-"Fiery 2.0 42 Colour Palette","https://www.beautybay.com/p/beauty-bay/fiery-20-42-colour-palette/",50
+product,url,alert_price,price,alert
+Fiery 2.0 42 Colour Palette,https://pdp-api.public.prd.beautybay.com/product/beauty-bay-fiery-20-42-colour-palette,50,21.65,True
